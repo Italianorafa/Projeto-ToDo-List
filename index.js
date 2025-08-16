@@ -16,7 +16,9 @@ let tasks = [];
 
 // abrir e fechar pop-ups
 function showPopUp(){
-    popUpHidden.style.display = 'flex'
+    popUpHidden.style.display = 'flex';
+    
+    newTask.focus()
 }
 
 function closePopUp(){
@@ -56,7 +58,7 @@ confirm.addEventListener('click', () => {
     }
 })
 
-// preenchendo vetores filter
+// mudanças de estado da tarefa
 lista.addEventListener('change', (event) => {
     
     if(event.target.matches('input[type=checkbox')){
@@ -79,6 +81,19 @@ lista.addEventListener('change', (event) => {
         }
     }
     
+})
+
+lista.addEventListener('click', (event) => {
+    if((event.target.matches('span') && event.target.classList.contains('delete-btn')) || event.target.matches('button')){
+        const taskId = event.target.closest('.delete-btn').dataset.id;
+
+        let updateTasks = tasks.filter(tarefa => tarefa.id !== taskId);
+        event.target.closest('label').remove();
+
+        upedateTasks.forEach(task => {
+            showList(task)
+        })
+    }
 })
 
 // filter functions
@@ -120,11 +135,15 @@ function pesquisa(){
 
 search.addEventListener('input', debounce(pesquisa, 300));
 
+
+
 function showList(tarefa){
     //criando elementos
     let label = document.createElement('label');
     let checkbox = document.createElement('input');
     let span = document.createElement('span');
+    let deleteBtn = document.createElement('button');
+    let icon = document.createElement('span');
 
     //editando elementos
     label.classList.add('item');
@@ -139,10 +158,17 @@ function showList(tarefa){
     else{
         span.style.textDecoration = 'none';
     }
+    deleteBtn.classList.add('delete-button')
+    deleteBtn.dataset.id = tarefa.id;
+    icon.classList.add('material-symbols-outlined');
+    icon.classList.add('delete-btn')
+    icon.textContent = 'delete'
+    deleteBtn.appendChild(icon);
 
     //adicionando na lista
     label.appendChild(checkbox);
     label.appendChild(span);
+    label.appendChild(deleteBtn)
     lista.appendChild(label);
 }
 
