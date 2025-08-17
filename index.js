@@ -200,6 +200,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if(savedTasks){
             return JSON.parse(savedTasks);
         }
+        else{
+            return [];
+        }
     }
 
     function addNewTask(){
