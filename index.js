@@ -1,6 +1,6 @@
 // selecao de documentos
 const lista = document.getElementById('list');
-const addTask = document.querySelector('input#add');
+const addTask = document.querySelector('add');
 const popUpHidden = document.querySelector('div#hidden');
 const popUp = document.querySelector('div#conteudo-pop');
 const fecha = document.querySelector('button#fechar');
