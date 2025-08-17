@@ -3,9 +3,9 @@ const lista = document.getElementById('list');
 const addTask = document.querySelector('input#add');
 const popUpHidden = document.querySelector('div#hidden');
 const popUp = document.querySelector('div#conteudo-pop');
-const close = document.querySelector('button#fechar');
-let newTask = document.querySelector('input#newtask');
-const confirm = document.getElementById('confirmar');
+const fecha = document.querySelector('button#fechar');
+const newTask = document.querySelector('input#newtask');
+const confirma = document.getElementById('confirmar');
 const concluidas = document.getElementById('concluidas');
 const inProgress = document.getElementById('progresso');
 const all = document.getElementById('todas');
@@ -13,6 +13,13 @@ const search = document.getElementById('search');
 
 // gerenciamento de tarefas
 let tasks = [];
+
+// carregar as tarefas do Banco de dados local
+window.addEventListener('load',() => {
+    tasks = carregarTasks();
+    tasks.forEach(tarefa => showList(tarefa))
+});
+
 
 // abrir e fechar pop-ups
 function showPopUp(){
@@ -33,28 +40,14 @@ window.addEventListener('click', (evento) => {
     }
 })
 addTask.addEventListener('click', showPopUp);
-close.addEventListener('click', closePopUp);
+fecha.addEventListener('click', closePopUp);
 
 //adicionar tarefas
-confirm.addEventListener('click', () => {
-    const task = newTask.value.trim();
+confirma.addEventListener('click', addNewTask)
+newTask.addEventListener('keydown', (event) => {
+    if(event.key === 'Enter'){
 
-    if(task !== ''){
-        const unicId = `Task-${Date.now()}`;
-        const objTask = {
-            name: task,
-            id: unicId,
-            checked: false,
-            decoration: 'none'
-        }
-        tasks.push(objTask);
-        showList(objTask);
-        // voltando para a tela inicial
-        newTask.value = '';
-        closePopUp();
-    }
-    else{
-        closePopUp();
+        addNewTask();
     }
 })
 
@@ -79,21 +72,23 @@ lista.addEventListener('change', (event) => {
         else{
             span.style.textDecoration = 'none';
         }
+        salvarTasks();
     }
     
 })
 
 lista.addEventListener('click', (event) => {
-    if((event.target.matches('span') && event.target.classList.contains('delete-btn')) || event.target.matches('button')){
+    if((event.target.matches('span') && event.target.classList.contains('delete-button')) || event.target.matches('button')){
         const taskId = event.target.closest('.delete-btn').dataset.id;
 
-        let updateTasks = tasks.filter(tarefa => tarefa.id !== taskId);
+        tasks = tasks.filter(tarefa => tarefa.id !== taskId);
+        salvarTasks();
+
         event.target.closest('label').remove();
 
-        upedateTasks.forEach(task => {
-            showList(task)
-        })
+        
     }
+    
 })
 
 // filter functions
@@ -158,10 +153,10 @@ function showList(tarefa){
     else{
         span.style.textDecoration = 'none';
     }
-    deleteBtn.classList.add('delete-button')
+    deleteBtn.classList.add('delete-btn')
     deleteBtn.dataset.id = tarefa.id;
     icon.classList.add('material-symbols-outlined');
-    icon.classList.add('delete-btn')
+    icon.classList.add('delete-button')
     icon.textContent = 'delete'
     deleteBtn.appendChild(icon);
 
@@ -184,4 +179,40 @@ function debounce(func, delay = 300){
         }, delay);
     }
 
+}
+
+function salvarTasks(){
+    let JSONtasks = JSON.stringify(tasks);
+    localStorage.setItem('Tarefas', JSONtasks);
+}
+
+function carregarTasks(){
+    let savedTasks = localStorage.getItem('Tarefas');
+    if(savedTasks){
+        return JSON.parse(savedTasks);
+    }
+}
+
+function addNewTask(){
+    const task = newTask.value.trim();
+
+    if(task !== ''){
+        const unicId = `Task-${Date.now()}`;
+        const objTask = {
+            name: task,
+            id: unicId,
+            checked: false,
+            decoration: 'none'
+        }
+
+        tasks.push(objTask);
+        salvarTasks();
+        showList(objTask);
+        // voltando para a tela inicial
+        newTask.value = '';
+        closePopUp();
+    }
+    else{
+        closePopUp();
+    }
 }
