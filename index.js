@@ -45,7 +45,14 @@ document.addEventListener('DOMContentLoaded', () => {
     fecha.addEventListener('click', closePopUp);
 
     //adicionar tarefas
-    confirma.addEventListener('click', addNewTask)
+    if(confirma){
+        console.log('botao encontrado')
+        confirma.addEventListener('click', addNewTask)
+    }
+    else{
+        console.log('botao nao encontrado')
+    }
+    
     newTask.addEventListener('keydown', (event) => {
         if(event.key === 'Enter'){
 
